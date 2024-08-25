@@ -29,32 +29,42 @@ SNAKE_COLOR = (0, 255, 0)
 # Скорость движения змейки:
 SPEED = 20
 
-# Настройка игрового окна:
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), 0, 32)
 
-# Заголовок окна игрового поля:
+
 pygame.display.set_caption('Змейка')
 
-# Настройка времени:
 clock = pygame.time.Clock()
 
 
-# Тут опишите все классы игры.
 class GameObject:
-    def __init__(self, body_color = (0, 0, 0)):
+    """Это базовый класс, от которого наследуются другие игровые объекты.
+    Он содержит общие атрибуты игровых объектов — например,
+    эти атрибуты описывают позицию и цвет объекта.
+    Этот же класс содержит и заготовку метода для отрисовки
+    объекта на игровом поле — draw.
+    """
+
+    def __init__(self, body_color=(0, 0, 0)):
         self.position = []
         self.body_color = body_color
 
     def draw(self):
-        for position in self.position:
-            rect = pygame.Rect(position, (GRID_SIZE, GRID_SIZE))
-            pygame.draw.rect(screen, self.body_color, rect)
-            pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+        """это абстрактный метод, который предназначен для переопределения
+        в дочерних классах.
+        Этот метод должен определять,
+        как объект будет отрисовываться на экране.
+        По умолчанию — pass.
+        """
+        pass
 
-    def grow(self):
-        pass        
 
 class Snake(GameObject):
+    """Класс, унаследованный от GameObject, описывающий змейку и её поведение.
+    Этот класс управляет её движением, отрисовкой,
+    а также обрабатывает действия пользователя.
+    """
+
     def __init__(self):
         super().__init__(SNAKE_COLOR)
         self.positions = [(GRID_SIZE * 5, GRID_SIZE * 5)]
@@ -64,16 +74,21 @@ class Snake(GameObject):
         self.length = 1
 
     def draw(self):
+        """отрисовывает змейку на экране, затирая след"""
         for positions in self.positions:
             rect = pygame.Rect(positions, (GRID_SIZE, GRID_SIZE))
             pygame.draw.rect(screen, self.body_color, rect)
             pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
 
     def move(self):
+        """обновляет позицию змейки (координаты каждой секции),
+        добавляя новую голову в начало списка positions
+        и удаляя последний элемент, если длина змейки не увеличилась.
+        """
         x, y = self.positions[0]
         dx, dy = self.direction
         new_head = ((x + dx * GRID_SIZE) % SCREEN_WIDTH, (y + dy * GRID_SIZE) % SCREEN_HEIGHT)
-    
+
         if new_head in self.positions[:-1]:
             pygame.quit()
             raise SystemExit("Game Over")
@@ -85,41 +100,58 @@ class Snake(GameObject):
             self.growing = False
 
     def grow(self):
+        """Отвечает за рост змейки"""
         self.growing = True
         self.length += 1
 
     def update_direction(self):
+        """обновляет направление движения змейки"""
         if self.next_direction:
             self.direction = self.next_direction
             self.next_direction = None
-    
+
     def reset(self):
-        # Начальные значения для змейки
+        """сбрасывает змейку в начальное состояние."""
         self.positions = [(GRID_SIZE * 5, GRID_SIZE * 5)]
         self.direction = RIGHT
         self.growing = False
         self.next_direction = None
-    
+
     def get_head_position(self):
+        """возвращает позицию головы змейки
+        (первый элемент в списке positions)
+        """
         return self.positions[0] if self.positions else None
 
 
 class Apple(GameObject):
+    """класс, унаследованный от GameObject, описывающий яблоко и действия
+    с ним. Яблоко должно отображаться в случайных клетках игрового поля.
+    """
+
     def __init__(self):
         super().__init__(APPLE_COLOR)
         self.position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE, randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
 
     def draw(self):
+        """отрисовывает яблоко на игровой поверхности"""
         rect = pygame.Rect(self.position, (GRID_SIZE, GRID_SIZE))
         pygame.draw.rect(screen, self.body_color, rect)
         pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
 
-
     def randomize_position(self):
+        """устанавливает случайное положение яблока на игровом поле —
+        задаёт атрибуту position новое значение.
+        Координаты выбираются так,
+        чтобы яблоко оказалось в пределах игрового поля.
+        """
         self.position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE, randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
 
 
 def handle_keys(snake):
+    """обрабатывает нажатия клавиш,
+    чтобы изменить направление движения змейки
+    """
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -136,6 +168,7 @@ def handle_keys(snake):
 
 
 def main():
+    """Основной цикл игры"""
     # Инициализация PyGame:
     pygame.init()
     # Тут нужно создать экземпляры классов.
