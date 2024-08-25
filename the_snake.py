@@ -87,7 +87,8 @@ class Snake(GameObject):
         """
         x, y = self.positions[0]
         dx, dy = self.direction
-        new_head = ((x + dx * GRID_SIZE) % SCREEN_WIDTH, (y + dy * GRID_SIZE) % SCREEN_HEIGHT)
+        new_head = ((x + dx * GRID_SIZE) % SCREEN_WIDTH,
+                    (y + dy * GRID_SIZE) % SCREEN_HEIGHT)
 
         if new_head in self.positions[:-1]:
             pygame.quit()
@@ -131,7 +132,8 @@ class Apple(GameObject):
 
     def __init__(self):
         super().__init__(APPLE_COLOR)
-        self.position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE, randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
+        self.position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE,
+                         randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
 
     def draw(self):
         """отрисовывает яблоко на игровой поверхности"""
@@ -145,7 +147,8 @@ class Apple(GameObject):
         Координаты выбираются так,
         чтобы яблоко оказалось в пределах игрового поля.
         """
-        self.position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE, randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
+        self.position = (randint(0, GRID_WIDTH - 1) * GRID_SIZE,
+                         randint(0, GRID_HEIGHT - 1) * GRID_SIZE)
 
 
 def handle_keys(snake):
