@@ -40,7 +40,7 @@ class GameObject:
         self.position = []
         self.body_color = body_color
 
-    def draw_cell(self, position):
+    def draw(self, position):
         """Отрисовка отдельной ячейки."""
         rect = pygame.Rect(position, (GRID_SIZE, GRID_SIZE))
         pygame.draw.rect(screen, self.body_color, rect)
@@ -60,7 +60,7 @@ class Snake(GameObject):
     def draw(self):
         """Отрисовка всех ячеек змейки."""
         for position in self.positions:
-            self.draw_cell(position)
+            super().draw(position)
 
     def move(self):
         """Обновление позиции змейки и отрисовка изменений."""
@@ -70,11 +70,11 @@ class Snake(GameObject):
                     (head_y + dir_y * GRID_SIZE) % SCREEN_HEIGHT)
 
         self.positions.insert(0, new_head)
-        self.draw_cell(new_head)  # Отрисовка новой головы
+        super().draw(new_head)  # Отрисовка новой головы
 
         if len(self.positions) > self.length:
             tail_position = self.positions.pop()
-            self.draw_cell(tail_position)  # Затирание старого хвоста
+            super().draw(tail_position)  # Затирание старого хвоста
 
     def grow(self):
         """Отвечает за увеличение длины змейки."""
@@ -113,7 +113,7 @@ class Apple(GameObject):
 
     def draw(self):
         """Отрисовывает яблоко на игровой поверхности."""
-        self.draw_cell(self.position)
+        super().draw(self.position)
 
     def randomize_position(self, snake_positions):
         """Устанавливает случайное положение яблока,
@@ -175,3 +175,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    
