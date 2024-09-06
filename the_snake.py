@@ -60,14 +60,9 @@ class Snake(GameObject):
         self.reset()
 
     def draw(self):
-        """Отрисовка головы и хвоста змейки."""
-        if self.positions:
-            # Отрисовка головы
-            self.draw_cell(self.positions[0])
-            # Если длина больше одного, затираем хвост
-            if len(self.positions) > self.length:
-                tail_position = self.positions[-1]
-                self.draw_cell(tail_position)  # Затирание старого хвоста
+        """Отрисовка всех сегментов змейки."""
+        for segment in self.positions:
+            self.draw_cell(segment)
 
     def move(self):
         """Обновление позиции змейки."""
@@ -77,6 +72,7 @@ class Snake(GameObject):
                     (head_y + dir_y * GRID_SIZE) % SCREEN_HEIGHT)
 
         self.positions.insert(0, new_head)  # Обновление позиции головы
+
         if len(self.positions) > self.length:
             self.positions.pop()  # Удаление старого хвоста
 
@@ -129,6 +125,7 @@ class Apple(GameObject):
             if new_position not in snake_positions:
                 self.position = new_position
                 break
+        return self.position
 
 
 def handle_keys(snake):
@@ -161,17 +158,24 @@ def main():
         snake.update_direction()
         snake.move()
 
+        # Проверка на столкновение с собой
         if snake.check_collision_with_self():
             snake.reset()  # Перезапуск игры при столкновении с собой
 
+        # Проверка на съедание яблока
         if snake.get_head_position() == apple.position:
+            # Увеличиваем змейку
             snake.grow()
+            # Размещаем яблоко на новом месте
             apple.randomize_position(snake.positions)
 
+        # Очищаем экран и рисуем змейку и яблоко
         screen.fill(BOARD_BACKGROUND_COLOR)
         snake.draw()
         apple.draw()
         pygame.display.update()
+
+        # Ограничение по скорости игры
         clock.tick(SNAKE_SPEED)
 
 
