@@ -126,7 +126,6 @@ class Apple(GameObject):
             if new_position not in snake_positions:
                 self.position = new_position
                 break
-        return self.position
 
 
 def handle_keys(snake):
