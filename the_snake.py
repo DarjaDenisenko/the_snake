@@ -42,6 +42,10 @@ class GameObject:
         self.body_color = body_color
 
     def draw(self, position):
+        """Оставляем метод пустым."""
+        pass
+
+    def draw_cell(self, position):
         """Отрисовка отдельной ячейки."""
         rect = pygame.Rect(position, (GRID_SIZE, GRID_SIZE))
         pygame.draw.rect(screen, self.body_color, rect)
@@ -53,29 +57,28 @@ class Snake(GameObject):
 
     def __init__(self):
         super().__init__(SNAKE_COLOR)
-        self.positions = [(GRID_SIZE * 5, GRID_SIZE * 5)]
-        self.direction = choice([RIGHT, DOWN, LEFT, UP])
-        self.length = 1
-        self.next_direction = None
+        self.reset()
 
     def draw(self):
-        """Отрисовка всех ячеек змейки."""
-        for position in self.positions:
-            super().draw(position)
+        """Отрисовка головы и хвоста змейки."""
+        if self.positions:
+            # Отрисовка головы
+            self.draw_cell(self.positions[0])
+            # Если длина больше одного, затираем хвост
+            if len(self.positions) > self.length:
+                tail_position = self.positions[-1]
+                self.draw_cell(tail_position)  # Затирание старого хвоста
 
     def move(self):
-        """Обновление позиции змейки и отрисовка изменений."""
-        head_x, head_y = self.positions[0]
+        """Обновление позиции змейки."""
+        head_x, head_y = self.get_head_position()
         dir_x, dir_y = self.direction
         new_head = ((head_x + dir_x * GRID_SIZE) % SCREEN_WIDTH,
                     (head_y + dir_y * GRID_SIZE) % SCREEN_HEIGHT)
 
-        self.positions.insert(0, new_head)
-        super().draw(new_head)  # Отрисовка новой головы
-
+        self.positions.insert(0, new_head)  # Обновление позиции головы
         if len(self.positions) > self.length:
-            tail_position = self.positions.pop()
-            super().draw(tail_position)  # Затирание старого хвоста
+            self.positions.pop()  # Удаление старого хвоста
 
     def grow(self):
         """Отвечает за увеличение длины змейки."""
@@ -114,7 +117,7 @@ class Apple(GameObject):
 
     def draw(self):
         """Отрисовывает яблоко на игровой поверхности."""
-        super().draw(self.position)
+        self.draw_cell(self.position)
 
     def randomize_position(self, snake_positions):
         """Устанавливает случайное положение яблока,
@@ -159,8 +162,7 @@ def main():
         snake.move()
 
         if snake.check_collision_with_self():
-            pygame.quit()
-            raise SystemExit("Game Over")
+            snake.reset()  # Перезапуск игры при столкновении с собой
 
         if snake.get_head_position() == apple.position:
             snake.grow()
