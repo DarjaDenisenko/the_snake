@@ -38,7 +38,7 @@ class GameObject:
     """Базовый класс для игровых объектов."""
 
     def __init__(self, body_color=BOARD_BACKGROUND_COLOR):
-        self.position = []
+        self.position = None
         self.body_color = body_color
 
     def draw(self, position):
@@ -47,9 +47,10 @@ class GameObject:
 
     def draw_cell(self, position):
         """Отрисовка отдельной ячейки."""
-        rect = pygame.Rect(position, (GRID_SIZE, GRID_SIZE))
-        pygame.draw.rect(screen, self.body_color, rect)
-        pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+        if position:  # Проверка, что позиция не None
+            rect = pygame.Rect(position[0], position[1], GRID_SIZE, GRID_SIZE)
+            pygame.draw.rect(screen, self.body_color, rect)
+            pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
 
 
 class Snake(GameObject):
@@ -58,11 +59,13 @@ class Snake(GameObject):
     def __init__(self):
         super().__init__(SNAKE_COLOR)
         self.reset()
+        self.previous_tail_position = None  # Для хранения предыдущего хвоста
 
     def draw(self):
-        """Отрисовка всех сегментов змейки."""
-        for segment in self.positions:
-            self.draw_cell(segment)
+        """Отрисовка головы и хвоста змейки."""
+        # Отрисовываем каждый сегмент змейки зелёным цветом
+        for position in self.positions[:self.length]:
+            self.draw_cell(position)
 
     def move(self):
         """Обновление позиции змейки."""
@@ -71,10 +74,13 @@ class Snake(GameObject):
         new_head = ((head_x + dir_x * GRID_SIZE) % SCREEN_WIDTH,
                     (head_y + dir_y * GRID_SIZE) % SCREEN_HEIGHT)
 
-        self.positions.insert(0, new_head)  # Обновление позиции головы
+        self.positions.insert(0, new_head)  # Добавляем новый сегмент головы
 
+        # Сохраняем позицию хвоста для затирания
         if len(self.positions) > self.length:
-            self.positions.pop()  # Удаление старого хвоста
+            self.previous_tail_position = self.positions.pop()  # Удаление старого хвоста
+        else:
+            self.previous_tail_position = None  # Хвост не удаляется, если змейка растёт
 
     def grow(self):
         """Отвечает за увеличение длины змейки."""
@@ -92,6 +98,7 @@ class Snake(GameObject):
         self.direction = RIGHT
         self.length = 1
         self.next_direction = None
+        self.previous_tail_position = None
 
     def get_head_position(self):
         """Возвращает позицию головы змейки."""
@@ -99,9 +106,7 @@ class Snake(GameObject):
 
     def check_collision_with_self(self):
         """Проверяет столкновение головы змейки с её телом."""
-        if self.get_head_position() in self.positions[1:]:
-            return True
-        return False
+        return self.get_head_position() in self.positions[1:]
 
 
 class Apple(GameObject):
@@ -109,7 +114,7 @@ class Apple(GameObject):
 
     def __init__(self):
         super().__init__(APPLE_COLOR)
-        self.position = self.randomize_position([])
+        self.randomize_position([])
 
     def draw(self):
         """Отрисовывает яблоко на игровой поверхности."""
@@ -125,7 +130,6 @@ class Apple(GameObject):
             if new_position not in snake_positions:
                 self.position = new_position
                 break
-        return self.position
 
 
 def handle_keys(snake):
