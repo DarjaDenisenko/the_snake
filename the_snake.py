@@ -78,9 +78,9 @@ class Snake(GameObject):
 
         # Сохраняем позицию хвоста для затирания
         if len(self.positions) > self.length:
-            self.previous_tail_position = self.positions.pop()  # Удаление старого хвоста
+            self.previous_tail_position = self.positions.pop() 
         else:
-            self.previous_tail_position = None  # Хвост не удаляется, если змейка растёт
+            self.previous_tail_position = None
 
     def grow(self):
         """Отвечает за увеличение длины змейки."""
