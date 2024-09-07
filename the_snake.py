@@ -78,7 +78,7 @@ class Snake(GameObject):
 
         # Сохраняем позицию хвоста для затирания
         if len(self.positions) > self.length:
-            self.previous_tail_position = self.positions.pop() 
+            self.previous_tail_position = self.positions.pop()
         else:
             self.previous_tail_position = None
 
