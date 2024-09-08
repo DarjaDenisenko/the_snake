@@ -36,6 +36,7 @@ clock = pygame.time.Clock()
 
 class GameObject:
     """Базовый класс для игровых объектов."""
+
     def __init__(self, body_color=BOARD_BACKGROUND_COLOR):
         self.position = None
         self.body_color = body_color
@@ -52,6 +53,7 @@ class GameObject:
             # Рисуем контур только для активных клеток змейки или объектов
             if color != BOARD_BACKGROUND_COLOR:  # если не цвет фона
                 pygame.draw.rect(screen, BORDER_COLOR, rect, 1)
+
 
 class Snake(GameObject):
     """Класс, описывающий змейку и её поведение."""
@@ -110,6 +112,7 @@ class Snake(GameObject):
         """Проверяет столкновение головы змейки с её телом."""
         return self.get_head_position() in self.positions[1:]
 
+
 class Apple(GameObject):
     """Класс, описывающий яблоко и действия с ним."""
 
@@ -135,7 +138,8 @@ class Apple(GameObject):
 
 def handle_keys(snake):
     """Обрабатывает нажатия клавиш, чтобы изменить
-    направление движения змейки."""
+    направление движения змейки.
+    """
     for event in pygame.event.get():
         if event.type == pygame.QUIT:
             pygame.quit()
@@ -164,12 +168,15 @@ def main():
 
         # Проверка на столкновение с собой
         if snake.check_collision_with_self():
-            snake.reset()  # Перезапуск игры при столкновении с собой
+            # Перезапуск игры при столкновении с собой
+            snake.reset()
 
         # Проверка на съедание яблока
         if snake.get_head_position() == apple.position:
-            snake.grow()  # Увеличиваем змейку
-            apple.randomize_position(snake.positions)  # Размещаем яблоко на новом месте
+            # Увеличиваем змейку
+            snake.grow()
+            # Размещаем яблоко на новом месте
+            apple.randomize_position(snake.positions)
 
         # Рисуем змейку и яблоко
         snake.draw()
