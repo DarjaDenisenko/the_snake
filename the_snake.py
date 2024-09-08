@@ -60,6 +60,7 @@ class Snake(GameObject):
 
     def __init__(self):
         super().__init__(SNAKE_COLOR)
+        self.should_draw_tail = True
         self.reset()
 
     def draw(self):
@@ -68,9 +69,10 @@ class Snake(GameObject):
         self.draw_cell(self.positions[0], SNAKE_COLOR)
 
         # Затираем хвост цветом фона, если змейка не растёт
-        if len(self.positions) > self.length:
+        if self.should_draw_tail == False:
             self.draw_cell(self.positions[-1], BOARD_BACKGROUND_COLOR)
-            self.positions.pop()
+            old_tail = self.positions.pop()  # Удаление хвоста
+            self.draw_cell(old_tail, BOARD_BACKGROUND_COLOR)  # Затирка хвоста
 
     def move(self):
         """Обновление позиции змейки."""
@@ -83,8 +85,9 @@ class Snake(GameObject):
 
         # Если длина змейки не увеличена, затираем хвост цветом фона
         if len(self.positions) > self.length:
-            old_tail = self.positions.pop()  # Удаление хвоста
-            self.draw_cell(old_tail, BOARD_BACKGROUND_COLOR)  # Затирка хвоста
+            self.should_draw_tail = False
+        else:
+            self.should_draw_tail = True
 
     def grow(self):
         """Отвечает за увеличение длины змейки."""
