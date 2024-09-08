@@ -69,7 +69,7 @@ class Snake(GameObject):
         self.draw_cell(self.positions[0], SNAKE_COLOR)
 
         # Затираем хвост цветом фона, если змейка не растёт
-        if self.should_draw_tail == False:
+        if self.should_draw_tail is False:
             self.draw_cell(self.positions[-1], BOARD_BACKGROUND_COLOR)
             old_tail = self.positions.pop()  # Удаление хвоста
             self.draw_cell(old_tail, BOARD_BACKGROUND_COLOR)  # Затирка хвоста
