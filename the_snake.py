@@ -60,7 +60,7 @@ class Snake(GameObject):
 
     def __init__(self):
         super().__init__(SNAKE_COLOR)
-        self.should_draw_tail = True
+        self.old_tail = None  # Атрибут для хранения позиции старого хвоста
         self.reset()
 
     def draw(self):
@@ -68,11 +68,10 @@ class Snake(GameObject):
         # Отрисовываем голову змейки
         self.draw_cell(self.positions[0], SNAKE_COLOR)
 
-        # Затираем хвост цветом фона, если змейка не растёт
-        if self.should_draw_tail is False:
-            self.draw_cell(self.positions[-1], BOARD_BACKGROUND_COLOR)
-            old_tail = self.positions.pop()  # Удаление хвоста
-            self.draw_cell(old_tail, BOARD_BACKGROUND_COLOR)  # Затирка хвоста
+        # Затираем старый хвост, если он есть
+        if self.old_tail:
+            self.draw_cell(self.old_tail, BOARD_BACKGROUND_COLOR)
+            self.old_tail = None  # После затирания сбрасываем
 
     def move(self):
         """Обновление позиции змейки."""
@@ -81,13 +80,12 @@ class Snake(GameObject):
         new_head = ((head_x + dir_x * GRID_SIZE) % SCREEN_WIDTH,
                     (head_y + dir_y * GRID_SIZE) % SCREEN_HEIGHT)
 
-        self.positions.insert(0, new_head)  # Обновление позиции головы
+        self.positions.insert(0, new_head)  # Добавляем новую голову
 
-        # Если длина змейки не увеличена, затираем хвост цветом фона
+        # Если длина змейки не увеличена, удаляем старый хвост
         if len(self.positions) > self.length:
-            self.should_draw_tail = False
-        else:
-            self.should_draw_tail = True
+            # Сохраняем позицию старого хвоста
+            self.old_tail = self.positions.pop()
 
     def grow(self):
         """Отвечает за увеличение длины змейки."""
@@ -101,11 +99,11 @@ class Snake(GameObject):
 
     def reset(self):
         """Сбрасывает змейку в начальное состояние."""
-        screen.fill(BOARD_BACKGROUND_COLOR)  # Обнуляем экран при перезапуске
         self.positions = [(GRID_SIZE * 5, GRID_SIZE * 5)]
         self.direction = RIGHT
         self.length = 1
         self.next_direction = None
+        self.old_tail = None
 
     def get_head_position(self):
         """Возвращает позицию головы змейки."""
@@ -173,6 +171,7 @@ def main():
         if snake.check_collision_with_self():
             # Перезапуск игры при столкновении с собой
             snake.reset()
+            screen.fill(BOARD_BACKGROUND_COLOR)  # Обнуляем экран при перезапуске
 
         # Проверка на съедание яблока
         if snake.get_head_position() == apple.position:
