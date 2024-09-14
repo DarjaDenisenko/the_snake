@@ -171,7 +171,8 @@ def main():
         if snake.check_collision_with_self():
             # Перезапуск игры при столкновении с собой
             snake.reset()
-            screen.fill(BOARD_BACKGROUND_COLOR)  # Обнуляем экран при перезапуске
+            # Обнуляем экран при перезапуске
+            screen.fill(BOARD_BACKGROUND_COLOR)
 
         # Проверка на съедание яблока
         if snake.get_head_position() == apple.position:
