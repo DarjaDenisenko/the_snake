@@ -71,7 +71,6 @@ class Snake(GameObject):
         # Затираем старый хвост, если он есть
         if self.old_tail:
             self.draw_cell(self.old_tail, BOARD_BACKGROUND_COLOR)
-            self.old_tail = None  # После затирания сбрасываем
 
     def move(self):
         """Обновление позиции змейки."""
@@ -86,6 +85,8 @@ class Snake(GameObject):
         if len(self.positions) > self.length:
             # Сохраняем позицию старого хвоста
             self.old_tail = self.positions.pop()
+        else:
+            self.old_tail = None
 
     def grow(self):
         """Отвечает за увеличение длины змейки."""
@@ -173,13 +174,13 @@ def main():
             snake.reset()
             # Обнуляем экран при перезапуске
             screen.fill(BOARD_BACKGROUND_COLOR)
-
-        # Проверка на съедание яблока
-        if snake.get_head_position() == apple.position:
-            # Увеличиваем змейку
-            snake.grow()
-            # Размещаем яблоко на новом месте
-            apple.randomize_position(snake.positions)
+        else:
+            # Проверка на съедание яблока
+            if snake.get_head_position() == apple.position:
+                # Увеличиваем змейку
+                snake.grow()
+                # Размещаем яблоко на новом месте
+                apple.randomize_position(snake.positions)
 
         # Рисуем змейку и яблоко
         snake.draw()
